@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Haven News</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: transparent;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+
+  /* ── CONTAINER ── */
+  #news-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0s;
+  }
+
+  #news-container.slide-in {
+    transform: translateY(0);
+    transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  #news-container.slide-out {
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  /* ── MAIN TICKER BAR ── */
+  #ticker-bar {
+    display: flex;
+    align-items: stretch;
+    height: 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Left logo block */
+  #logo-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0a1628;
+    min-width: 180px;
+    padding: 0 18px;
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  #logo-block::after {
+    content: '';
+    position: absolute;
+    right: -18px;
+    top: 0;
+    bottom: 0;
+    width: 36px;
+    background: #0a1628;
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+    z-index: 1;
+  }
+
+  #logo-name {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: 15px;
+    color: #c9a84c;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  #logo-sub {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 300;
+    font-size: 9.5px;
+    color: rgba(201,168,76,0.6);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* Tier badge */
+  #tier-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 22px 0 30px;
+    min-width: 130px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  #tier-block.breaking  { background: #b71c1c; }
+  #tier-block.developing { background: #e65100; }
+  #tier-block.citynews  { background: #1a3a6b; }
+
+  #tier-block::after {
+    content: '';
+    position: absolute;
+    right: -14px;
+    top: 0;
+    bottom: 0;
+    width: 28px;
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+    z-index: 1;
+  }
+  #tier-block.breaking::after  { background: #b71c1c; }
+  #tier-block.developing::after { background: #e65100; }
+  #tier-block.citynews::after  { background: #1a3a6b; }
+
+  #tier-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #fff;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Title block */
+  #title-block {
+    display: flex;
+    align-items: center;
+    background: rgba(6, 14, 30, 0.97);
+    padding: 0 28px 0 22px;
+    min-width: 260px;
+    max-width: 320px;
+    flex-shrink: 0;
+    border-right: 2px solid rgba(201,168,76,0.25);
+  }
+
+  #headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 17px;
+    color: #ffffff;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Body scroll block */
+  #body-block {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: rgba(6, 14, 30, 0.97);
+    overflow: hidden;
+    position: relative;
+  }
+
+  #body-scroll-track {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    will-change: transform;
+  }
+
+  #body-text {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 400;
+    font-size: 14.5px;
+    color: rgba(255,255,255,0.88);
+    white-space: nowrap;
+    padding-right: 80px;
+  }
+
+  /* Gold separator dot */
+  #body-block::before {
+    content: '◆';
+    color: #c9a84c;
+    font-size: 10px;
+    position: absolute;
+    left: 14px;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  /* Time stamp block */
+  #time-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(6, 14, 30, 0.97);
+    padding: 0 18px;
+    min-width: 90px;
+    flex-shrink: 0;
+    border-left: 1px solid rgba(201,168,76,0.2);
+  }
+
+  #time-value {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: #c9a84c;
+    letter-spacing: 0.05em;
+  }
+
+  #time-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 300;
+    font-size: 9px;
+    color: rgba(201,168,76,0.5);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ── BOTTOM GOLD LINE ── */
+  #gold-line {
+    height: 3px;
+    background: linear-gradient(90deg, #c9a84c 0%, #f0d078 40%, #c9a84c 100%);
+  }
+
+  /* ── LIVE INDICATOR (breaking only) ── */
+  #live-dot {
+    display: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff3333;
+    margin-right: 8px;
+    animation: pulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  #live-dot.visible { display: inline-block; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  /* Scroll animation */
+  @keyframes scrollText {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .scrolling {
+    animation: scrollText linear infinite;
+  }
+</style>
+</head>
+<body>
+
+<div id="news-container">
+  <div id="ticker-bar">
+
+    <div id="logo-block">
+      <div id="logo-name">Blue Haven</div>
+      <div id="logo-sub">Live News</div>
+    </div>
+
+    <div id="tier-block" class="citynews">
+      <div id="tier-label">City News</div>
+    </div>
+
+    <div id="title-block">
+      <div id="headline">Loading…</div>
+    </div>
+
+    <div id="body-block">
+      <span id="live-dot"></span>
+      <div id="body-scroll-track">
+        <span id="body-text">Connecting to Blue Haven News…</span>
+      </div>
+    </div>
+
+    <div id="time-block">
+      <div id="time-value">--:--</div>
+      <div id="time-label">Live</div>
+    </div>
+
+  </div>
+  <div id="gold-line"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
